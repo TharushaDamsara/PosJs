@@ -2,142 +2,203 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>POS System - SPA</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>POS SPA</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        section {
-            display: none;
-            padding: 50px;
-        }
-        .card {
-            margin-top: 20px;
-        }
-        table {
-            margin-top: 20px;
-        }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-100 text-gray-800">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-5">
-    <a class="navbar-brand" href="#">POS System</a>
-    <div class="collapse navbar-collapse">
-        <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><button class="btn btn-outline-light mx-2" id="nav-home">Dashboard</button></li>
-            <li class="nav-item"><button class="btn btn-outline-light mx-2" id="nav-customer">Customers</button></li>
-            <li class="nav-item"><button class="btn btn-outline-light mx-2" id="nav-item">Items</button></li>
-            <li class="nav-item"><button class="btn btn-outline-light mx-2" id="nav-order">Orders</button></li>
-            <li class="nav-item"><button class="btn btn-outline-light mx-2" id="nav-checkout">Checkout</button></li>
-        </ul>
-    </div>
+<header class="text-center py-6 bg-blue-200 shadow mb-6">
+    <h1 class="text-3xl font-bold text-blue-700">POS System - SPA</h1>
+</header>
+
+<nav class="flex justify-center gap-4 mb-8">
+    <button class="tab-btn bg-blue-600 text-white px-4 py-2 rounded" data-target="customer-section">Customer</button>
+    <button class="tab-btn bg-green-600 text-white px-4 py-2 rounded" data-target="item-section">Item</button>
+    <button class="tab-btn bg-purple-600 text-white px-4 py-2 rounded" data-target="order-section">Order</button>
 </nav>
 
-<section id="home"><h1>Dashboard</h1></section>
+<main class="max-w-5xl mx-auto space-y-10">
 
-<section id="customer">
-    <h1>Customer Management</h1>
-    <input type="text" id="customer-name" placeholder="Customer Name" class="form-control">
-    <button id="add-customer" class="btn btn-primary mt-2">Add Customer</button>
-    <table class="table"><thead><tr><th>Name</th><th>Actions</th></tr></thead><tbody id="customer-list"></tbody></table>
-</section>
+    <!-- Customer Section -->
+    <section id="customer-section" class="tab-content bg-white p-6 rounded shadow">
+        <h2 class="text-xl font-bold text-blue-600 mb-4">Manage Customers</h2>
+        <form id="customer-form" class="flex flex-col gap-2 mb-4">
+            <input type="text" id="customer-name" placeholder="Customer Name" class="p-2 border rounded">
+            <input type="email" id="customer-email" placeholder="Customer Email" class="p-2 border rounded">
+            <button type="submit" class="bg-blue-500 text-white py-2 rounded">Add Customer</button>
+        </form>
+        <ul id="customer-list" class="space-y-2"></ul>
+    </section>
 
-<section id="item">
-    <h1>Item Management</h1>
-    <input type="text" id="item-name" placeholder="Item Name" class="form-control">
-    <input type="number" id="item-price" placeholder="Price" class="form-control mt-2">
-    <button id="add-item" class="btn btn-primary mt-2">Add Item</button>
-    <table class="table"><thead><tr><th>Name</th><th>Price</th><th>Actions</th></tr></thead><tbody id="item-list"></tbody></table>
-</section>
+    <!-- Item Section -->
+    <section id="item-section" class="tab-content bg-white p-6 rounded shadow hidden">
+        <h2 class="text-xl font-bold text-green-600 mb-4">Manage Items</h2>
+        <form id="item-form" class="flex flex-col gap-2 mb-4">
+            <input type="text" id="item-name" placeholder="Item Name" class="p-2 border rounded">
+            <input type="number" id="item-price" placeholder="Price" class="p-2 border rounded">
+            <input type="number" id="item-qty" placeholder="Quantity" class="p-2 border rounded" min="0">
+            <button type="submit" class="bg-green-500 text-white py-2 rounded">Add Item</button>
+        </form>
+        <ul id="item-list" class="space-y-2"></ul>
+    </section>
 
-<section id="order">
-    <h1>Order Management</h1>
-    <input type="text" id="order-customer" placeholder="Customer Name" class="form-control">
-    <input type="text" id="order-item" placeholder="Item Name" class="form-control mt-2">
-    <input type="number" id="order-qty" placeholder="Quantity" class="form-control mt-2">
-    <button id="add-order" class="btn btn-primary mt-2">Add Order</button>
-    <table class="table"><thead><tr><th>Customer</th><th>Item</th><th>Qty</th><th>Actions</th></tr></thead><tbody id="order-list"></tbody></table>
-</section>
+    <!-- Order Section -->
+    <section id="order-section" class="tab-content bg-white p-6 rounded shadow hidden">
+        <h2 class="text-xl font-bold text-purple-600 mb-4">Place Order</h2>
+        <form id="order-form" class="flex flex-col gap-2 mb-4">
+            <select id="order-customer" class="p-2 border rounded"></select>
+            <select id="order-item" class="p-2 border rounded"></select>
+            <input type="number" id="order-qty" placeholder="Quantity" min="1" class="p-2 border rounded">
+            <button type="submit" class="bg-purple-500 text-white py-2 rounded">Place Order</button>
+        </form>
+        <ul id="order-list" class="space-y-2"></ul>
+    </section>
 
-<section id="checkout">
-    <h1>Checkout</h1>
-    <div id="checkout-summary"></div>
-    <button class="btn btn-success mt-2" id="complete-checkout">Complete Purchase</button>
-</section>
+</main>
 
 <script>
-    function showSection(id) {
-        $('section').hide();
-        $('#' + id).show();
-        localStorage.setItem('lastPage', id);
+    let customers = [];
+    let items = [];
+    let orders = [];
+
+    $(".tab-btn").click(function () {
+        $(".tab-content").hide();
+        $("#" + $(this).data("target")).show();
+    });
+
+    // Customer CRUD
+    $("#customer-form").submit(function (e) {
+        e.preventDefault();
+        const name = $("#customer-name").val();
+        const email = $("#customer-email").val();
+        if (!name || !email) return;
+
+        customers.push({ name, email });
+        $("#customer-name, #customer-email").val("");
+        renderCustomers();
+        updateDropdowns();
+    });
+
+    function renderCustomers() {
+        const list = $("#customer-list").empty();
+        customers.forEach((c, i) => {
+            list.append(`<li class="flex justify-between items-center bg-blue-50 p-2 rounded">
+                <span>${c.name} (${c.email})</span>
+                <div class="flex gap-2">
+                    <button class="text-sm text-white bg-yellow-500 px-2 py-1 rounded" onclick="editCustomer(${i})">Edit</button>
+                    <button class="text-sm text-white bg-red-500 px-2 py-1 rounded" onclick="deleteCustomer(${i})">Delete</button>
+                </div>
+            </li>`);
+        });
     }
 
-    $(document).ready(function () {
-        const last = localStorage.getItem('lastPage') || 'home';
-        showSection(last);
-
-        $('#nav-home').click(() => showSection('home'));
-        $('#nav-customer').click(() => showSection('customer'));
-        $('#nav-item').click(() => showSection('item'));
-        $('#nav-order').click(() => showSection('order'));
-        $('#nav-checkout').click(() => {
-            showSection('checkout');
-            updateCheckout();
-        });
-
-        $('#add-customer').click(function () {
-            const name = $('#customer-name').val();
-            if (name) {
-                $('#customer-list').append(`<tr><td><input class='form-control' value='${name}'/></td><td><button class='btn btn-sm btn-danger delete'>Delete</button></td></tr>`);
-                $('#customer-name').val('');
-            }
-        });
-
-        $('#add-item').click(function () {
-            const name = $('#item-name').val();
-            const price = $('#item-price').val();
-            if (name && price) {
-                $('#item-list').append(`<tr><td><input class='form-control' value='${name}'/></td><td><input class='form-control' value='${price}'/></td><td><button class='btn btn-sm btn-danger delete'>Delete</button></td></tr>`);
-                $('#item-name').val('');
-                $('#item-price').val('');
-            }
-        });
-
-        $('#add-order').click(function () {
-            const customer = $('#order-customer').val();
-            const item = $('#order-item').val();
-            const qty = $('#order-qty').val();
-            if (customer && item && qty) {
-                $('#order-list').append(`<tr><td><input class='form-control' value='${customer}'/></td><td><input class='form-control' value='${item}'/></td><td><input class='form-control' type='number' value='${qty}'/></td><td><button class='btn btn-sm btn-danger delete'>Delete</button></td></tr>`);
-                $('#order-customer').val('');
-                $('#order-item').val('');
-                $('#order-qty').val('');
-            }
-        });
-
-        $(document).on('click', '.delete', function () {
-            $(this).closest('tr').remove();
-        });
-
-        $('#complete-checkout').click(function () {
-            alert('Checkout Complete');
-            $('#order-list').empty();
-            $('#checkout-summary').empty();
-        });
-
-        function updateCheckout() {
-            let summary = '<ul>';
-            $('#order-list tr').each(function () {
-                const customer = $(this).find('td').eq(0).find('input').val();
-                const item = $(this).find('td').eq(1).find('input').val();
-                const qty = $(this).find('td').eq(2).find('input').val();
-                summary += `<li>${customer} ordered ${qty} of ${item}</li>`;
-            });
-            summary += '</ul>';
-            $('#checkout-summary').html(summary);
+    function editCustomer(index) {
+        const c = customers[index];
+        const newName = prompt("Update name:", c.name);
+        const newEmail = prompt("Update email:", c.email);
+        if (newName && newEmail) {
+            customers[index] = { name: newName, email: newEmail };
+            renderCustomers();
+            updateDropdowns();
         }
+    }
+
+    function deleteCustomer(index) {
+        customers.splice(index, 1);
+        renderCustomers();
+        updateDropdowns();
+    }
+
+    // Item CRUD
+    $("#item-form").submit(function (e) {
+        e.preventDefault();
+        const name = $("#item-name").val();
+        const price = parseFloat($("#item-price").val());
+        const qty = parseInt($("#item-qty").val());
+        if (!name || isNaN(price) || isNaN(qty)) return;
+
+        items.push({ name, price, qty });
+        $("#item-name, #item-price, #item-qty").val("");
+        renderItems();
+        updateDropdowns();
     });
+
+    function renderItems() {
+        const list = $("#item-list").empty();
+        items.forEach((item, i) => {
+            list.append(`<li class="flex justify-between items-center bg-green-50 p-2 rounded">
+                <span>${item.name} ($${item.price}) - Qty: ${item.qty}</span>
+                <div class="flex gap-2">
+                    <button class="text-sm text-white bg-yellow-500 px-2 py-1 rounded" onclick="editItem(${i})">Edit</button>
+                    <button class="text-sm text-white bg-red-500 px-2 py-1 rounded" onclick="deleteItem(${i})">Delete</button>
+                </div>
+            </li>`);
+        });
+    }
+
+    function editItem(index) {
+        const i = items[index];
+        const newName = prompt("Update name:", i.name);
+        const newPrice = parseFloat(prompt("Update price:", i.price));
+        const newQty = parseInt(prompt("Update quantity:", i.qty));
+        if (newName && !isNaN(newPrice) && !isNaN(newQty)) {
+            items[index] = { name: newName, price: newPrice, qty: newQty };
+            renderItems();
+            updateDropdowns();
+        }
+    }
+
+    function deleteItem(index) {
+        items.splice(index, 1);
+        renderItems();
+        updateDropdowns();
+    }
+
+    // Order CRUD
+    $("#order-form").submit(function (e) {
+        e.preventDefault();
+        const customerEmail = $("#order-customer").val();
+        const itemName = $("#order-item").val();
+        const qty = parseInt($("#order-qty").val());
+        if (!customerEmail || !itemName || qty < 1) return;
+
+        const item = items.find(i => i.name === itemName);
+        if (!item || item.qty < qty) {
+            alert("Not enough stock available.");
+            return;
+        }
+
+        const total = (item.price * qty).toFixed(2);
+        orders.push({ customerEmail, itemName, qty, total });
+        item.qty -= qty;
+
+        $("#order-qty").val("");
+        renderOrders();
+        renderItems();
+        updateDropdowns();
+    });
+
+    function renderOrders() {
+        const list = $("#order-list").empty();
+        orders.forEach(order => {
+            list.append(`<li class="bg-purple-100 p-2 rounded">
+                <span>${order.customerEmail} ordered ${order.qty} x ${order.itemName} - Total: $${order.total}</span>
+            </li>`);
+        });
+    }
+
+    function updateDropdowns() {
+        const customerSelect = $("#order-customer").empty();
+        customers.forEach(c => {
+            customerSelect.append(`<option value="${c.email}">${c.name} (${c.email})</option>`);
+        });
+
+        const itemSelect = $("#order-item").empty();
+        items.filter(i => i.qty > 0).forEach(i => {
+            itemSelect.append(`<option value="${i.name}">${i.name} ($${i.price}) - Qty: ${i.qty}</option>`);
+        });
+    }
 </script>
 
 </body>
