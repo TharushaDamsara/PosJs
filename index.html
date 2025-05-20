@@ -1,205 +1,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>POS SPA</title>
+    <meta charset="UTF-8" />
+    <title>POS System - MVC SPA</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-light">
 
-<header class="text-center py-6 bg-blue-200 shadow mb-6">
-    <h1 class="text-3xl font-bold text-blue-700">POS System - SPA</h1>
+<header class="bg-primary text-white text-center py-4 mb-4 shadow">
+    <h1 class="h3">POS System - MVC SPA</h1>
 </header>
 
-<nav class="flex justify-center gap-4 mb-8">
-    <button class="tab-btn bg-blue-600 text-white px-4 py-2 rounded" data-target="customer-section">Customer</button>
-    <button class="tab-btn bg-green-600 text-white px-4 py-2 rounded" data-target="item-section">Item</button>
-    <button class="tab-btn bg-purple-600 text-white px-4 py-2 rounded" data-target="order-section">Order</button>
+<nav class="container mb-4 text-center">
+    <div class="btn-group" role="group">
+        <button class="btn btn-outline-primary nav-btn" data-target="customer-section">Customer</button>
+        <button class="btn btn-outline-success nav-btn" data-target="item-section">Item</button>
+        <button class="btn btn-outline-warning nav-btn" data-target="order-section">Order</button>
+    </div>
 </nav>
 
-<main class="max-w-5xl mx-auto space-y-10">
-
+<main class="container">
     <!-- Customer Section -->
-    <section id="customer-section" class="tab-content bg-white p-6 rounded shadow">
-        <h2 class="text-xl font-bold text-blue-600 mb-4">Manage Customers</h2>
-        <form id="customer-form" class="flex flex-col gap-2 mb-4">
-            <input type="text" id="customer-name" placeholder="Customer Name" class="p-2 border rounded">
-            <input type="email" id="customer-email" placeholder="Customer Email" class="p-2 border rounded">
-            <button type="submit" class="bg-blue-500 text-white py-2 rounded">Add Customer</button>
-        </form>
-        <ul id="customer-list" class="space-y-2"></ul>
+    <section id="customer-section" class="content-section">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">Manage Customers</div>
+            <div class="card-body">
+                <form id="customer-form" class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <input type="text" id="cId" class="form-control" placeholder="Customer ID" readonly />
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" id="name" class="form-control" placeholder="Customer Name" />
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" id="tel" class="form-control" placeholder="Telephone" />
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="button" class="btn btn-primary" id="saveBtn">Add</button>
+                    </div>
+                </form>
+                <table class="table table-bordered table-hover">
+                    <thead class="table-primary">
+                    <tr><th>ID</th><th>Name</th><th>Telephone</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="customer_tBody">
+                    <!-- Dynamic rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </section>
 
     <!-- Item Section -->
-    <section id="item-section" class="tab-content bg-white p-6 rounded shadow hidden">
-        <h2 class="text-xl font-bold text-green-600 mb-4">Manage Items</h2>
-        <form id="item-form" class="flex flex-col gap-2 mb-4">
-            <input type="text" id="item-name" placeholder="Item Name" class="p-2 border rounded">
-            <input type="number" id="item-price" placeholder="Price" class="p-2 border rounded">
-            <input type="number" id="item-qty" placeholder="Quantity" class="p-2 border rounded" min="0">
-            <button type="submit" class="bg-green-500 text-white py-2 rounded">Add Item</button>
-        </form>
-        <ul id="item-list" class="space-y-2"></ul>
+    <section id="item-section" class="content-section d-none">
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">Manage Items</div>
+            <div class="card-body">
+                <form id="item-form" class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <input type="text" id="item-id" class="form-control" placeholder="Item ID" readonly />
+                    </div>
+                    <div class="col-md-4">
+                        <input type="text" id="item-name" class="form-control" placeholder="Item Name" />
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" id="item-price" class="form-control" placeholder="Price" min="0.01" step="0.01" />
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" id="item-qty" class="form-control" placeholder="Qty" min="0" />
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-success">Add</button>
+                    </div>
+                </form>
+                <table class="table table-bordered table-hover">
+                    <thead class="table-success">
+                    <tr><th>ID</th><th>Name</th><th>Price</th><th>Qty</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody id="item_tBody">
+                    <!-- Dynamic rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </section>
 
     <!-- Order Section -->
-    <section id="order-section" class="tab-content bg-white p-6 rounded shadow hidden">
-        <h2 class="text-xl font-bold text-purple-600 mb-4">Place Order</h2>
-        <form id="order-form" class="flex flex-col gap-2 mb-4">
-            <select id="order-customer" class="p-2 border rounded"></select>
-            <select id="order-item" class="p-2 border rounded"></select>
-            <input type="number" id="order-qty" placeholder="Quantity" min="1" class="p-2 border rounded">
-            <button type="submit" class="bg-purple-500 text-white py-2 rounded">Place Order</button>
-        </form>
-        <ul id="order-list" class="space-y-2"></ul>
+    <section id="order-section" class="content-section d-none">
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-white">Place Order</div>
+            <div class="card-body">
+                <form id="order-form" class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <select id="order-customer" class="form-select">
+                            <option disabled selected>Select Customer</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <select id="order-item" class="form-select">
+                            <option disabled selected>Select Item</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <input type="number" id="order-qty" class="form-control" placeholder="Qty" min="1" />
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-warning text-white">Place Order</button>
+                    </div>
+                </form>
+                <table class="table table-bordered table-hover">
+                    <thead class="table-warning">
+                    <tr><th>Customer</th><th>Item</th><th>Qty</th><th>Total</th></tr>
+                    </thead>
+                    <tbody id="order_tBody"></tbody>
+                </table>
+            </div>
+        </div>
     </section>
-
 </main>
 
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Model -->
+<script type="module" src="model/customer.js"></script>
+<script type="module" src="model/item.js"></script>
+<script type="module" src="model/order.js"></script>
+
+<!-- DB -->
+<script type="module" src="db/customer.js"></script>
+<script type="module" src="db/item.js"></script>
+<script type="module" src="db/order.js"></script>
+
+<!-- Controllers -->
+<script type="module" src="controller/customer.js"></script>
+<script type="module" src="controller/item.js"></script>
+<script type="module" src="controller/order.js"></script>
+
+<!-- Navigation -->
 <script>
-    let customers = [];
-    let items = [];
-    let orders = [];
-
-    $(".tab-btn").click(function () {
-        $(".tab-content").hide();
-        $("#" + $(this).data("target")).show();
+    $(".nav-btn").on("click", function () {
+        $(".content-section").addClass("d-none");
+        $("#" + $(this).data("target")).removeClass("d-none");
     });
 
-    // Customer CRUD
-    $("#customer-form").submit(function (e) {
-        e.preventDefault();
-        const name = $("#customer-name").val();
-        const email = $("#customer-email").val();
-        if (!name || !email) return;
-
-        customers.push({ name, email });
-        $("#customer-name, #customer-email").val("");
-        renderCustomers();
-        updateDropdowns();
-    });
-
-    function renderCustomers() {
-        const list = $("#customer-list").empty();
-        customers.forEach((c, i) => {
-            list.append(`<li class="flex justify-between items-center bg-blue-50 p-2 rounded">
-                <span>${c.name} (${c.email})</span>
-                <div class="flex gap-2">
-                    <button class="text-sm text-white bg-yellow-500 px-2 py-1 rounded" onclick="editCustomer(${i})">Edit</button>
-                    <button class="text-sm text-white bg-red-500 px-2 py-1 rounded" onclick="deleteCustomer(${i})">Delete</button>
-                </div>
-            </li>`);
-        });
-    }
-
-    function editCustomer(index) {
-        const c = customers[index];
-        const newName = prompt("Update name:", c.name);
-        const newEmail = prompt("Update email:", c.email);
-        if (newName && newEmail) {
-            customers[index] = { name: newName, email: newEmail };
-            renderCustomers();
-            updateDropdowns();
-        }
-    }
-
-    function deleteCustomer(index) {
-        customers.splice(index, 1);
-        renderCustomers();
-        updateDropdowns();
-    }
-
-    // Item CRUD
-    $("#item-form").submit(function (e) {
-        e.preventDefault();
-        const name = $("#item-name").val();
-        const price = parseFloat($("#item-price").val());
-        const qty = parseInt($("#item-qty").val());
-        if (!name || isNaN(price) || isNaN(qty)) return;
-
-        items.push({ name, price, qty });
-        $("#item-name, #item-price, #item-qty").val("");
-        renderItems();
-        updateDropdowns();
-    });
-
-    function renderItems() {
-        const list = $("#item-list").empty();
-        items.forEach((item, i) => {
-            list.append(`<li class="flex justify-between items-center bg-green-50 p-2 rounded">
-                <span>${item.name} ($${item.price}) - Qty: ${item.qty}</span>
-                <div class="flex gap-2">
-                    <button class="text-sm text-white bg-yellow-500 px-2 py-1 rounded" onclick="editItem(${i})">Edit</button>
-                    <button class="text-sm text-white bg-red-500 px-2 py-1 rounded" onclick="deleteItem(${i})">Delete</button>
-                </div>
-            </li>`);
-        });
-    }
-
-    function editItem(index) {
-        const i = items[index];
-        const newName = prompt("Update name:", i.name);
-        const newPrice = parseFloat(prompt("Update price:", i.price));
-        const newQty = parseInt(prompt("Update quantity:", i.qty));
-        if (newName && !isNaN(newPrice) && !isNaN(newQty)) {
-            items[index] = { name: newName, price: newPrice, qty: newQty };
-            renderItems();
-            updateDropdowns();
-        }
-    }
-
-    function deleteItem(index) {
-        items.splice(index, 1);
-        renderItems();
-        updateDropdowns();
-    }
-
-    // Order CRUD
-    $("#order-form").submit(function (e) {
-        e.preventDefault();
-        const customerEmail = $("#order-customer").val();
-        const itemName = $("#order-item").val();
-        const qty = parseInt($("#order-qty").val());
-        if (!customerEmail || !itemName || qty < 1) return;
-
-        const item = items.find(i => i.name === itemName);
-        if (!item || item.qty < qty) {
-            alert("Not enough stock available.");
-            return;
-        }
-
-        const total = (item.price * qty).toFixed(2);
-        orders.push({ customerEmail, itemName, qty, total });
-        item.qty -= qty;
-
-        $("#order-qty").val("");
-        renderOrders();
-        renderItems();
-        updateDropdowns();
-    });
-
-    function renderOrders() {
-        const list = $("#order-list").empty();
-        orders.forEach(order => {
-            list.append(`<li class="bg-purple-100 p-2 rounded">
-                <span>${order.customerEmail} ordered ${order.qty} x ${order.itemName} - Total: $${order.total}</span>
-            </li>`);
-        });
-    }
-
-    function updateDropdowns() {
-        const customerSelect = $("#order-customer").empty();
-        customers.forEach(c => {
-            customerSelect.append(`<option value="${c.email}">${c.name} (${c.email})</option>`);
-        });
-
-        const itemSelect = $("#order-item").empty();
-        items.filter(i => i.qty > 0).forEach(i => {
-            itemSelect.append(`<option value="${i.name}">${i.name} ($${i.price}) - Qty: ${i.qty}</option>`);
-        });
-    }
 </script>
-
 </body>
 </html>
