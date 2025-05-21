@@ -1,1 +1,1 @@
-export const ItemDB = [];
+export let ItemDB = [];

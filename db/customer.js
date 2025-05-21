@@ -1,1 +1,1 @@
-export const CustomerDB = [];
+export let CustomerDB = [];

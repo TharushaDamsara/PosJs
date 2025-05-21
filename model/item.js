@@ -5,22 +5,41 @@ export class Item {
     #itemQty;
 
     constructor(id, name, price, qty) {
-        this._itemId = id;
-        this._itemName = name;
-        this._itemPrice = price;
-        this._itemQty = qty;
+        this.#itemId = id;
+        this.#itemName = name;
+        this.#itemPrice = price;
+        this.#itemQty = qty;
     }
 
-    getItemId() { return this._itemId; }
-    setItemId(val) { this._itemId = val; }
+    getItemId() {
+        return this.#itemId;
+    }
 
-    getItemName() { return this._itemName; }
-    setItemName(val) { this._itemName = val; }
+    setItemId(val) {
+        this.#itemId = val;
+    }
 
-    getItemPrice() { return this._itemPrice; }
-    setItemPrice(val) { this._itemPrice = val; }
+    getItemName() {
+        return this.#itemName;
+    }
 
-    getItemQty() { return this._itemQty; }
-    setItemQty(val) { this._itemQty = val; }
+    setItemName(val) {
+        this.#itemName = val;
+    }
 
+    getItemPrice() {
+        return this.#itemPrice;
+    }
+
+    setItemPrice(val) {
+        this.#itemPrice = val;
+    }
+
+    getItemQty() {
+        return this.#itemQty;
+    }
+
+    setItemQty(val) {
+        this.#itemQty = val;
+    }
 }

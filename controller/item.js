@@ -1,114 +1,114 @@
-import { Item } from "../model/item.js";
-import { ItemDB } from "../db/item.js";
+import { Item } from "/model/item.js";
+import { ItemDB } from "/db/item.js";
 
-let isEditingItem = false;
-let editingItemId = null;
+let editMode = false;
+let editItemId = null;
 
-$(document).ready(() => {
-    generateNextItemId();
-    renderItemTable();
+function generateItemId() {
+    return "I" + String(ItemDB.length + 1).padStart(3, "0");
+}
 
-    // Handle item form submission
-    $("#item-form").on("submit", function (e) {
-        e.preventDefault();
-
-        const id = $("#item-id").val();
-        const name = $("#item-name").val().trim();
-        const price = parseFloat($("#item-price").val());
-        const qty = parseInt($("#item-qty").val());
-
-        if (!name || isNaN(price) || isNaN(qty)) {
-            Swal.fire({
-                title: "Warning",
-                text: "Please fill out all fields correctly.",
-                icon: "warning",
-                width: "300px",
-            });
-            return;
-        }
-
-        if (isEditingItem) {
-            // Update existing item
-            const index = ItemDB.findIndex(item => item.getItemId() === editingItemId);
-            if (index !== -1) {
-                ItemDB[index].setItemName(name);
-                ItemDB[index].setItemPrice(price);
-                ItemDB[index].setItemQty(qty);
-            }
-            isEditingItem = false;
-            editingItemId = null;
-        } else {
-            // Save new item
-            const newItem = new Item(id, name, price, qty);
-            ItemDB.push(newItem);
-        }
-
-        console.log(ItemDB);
-
-        clearItemFields();
-        renderItemTable();
-        generateNextItemId();
-    });
-
-    // Edit button handler
-    $(document).on("click", ".btn-edit-item", function () {
-        const row = $(this).closest("tr");
-        const id = row.find("td:eq(0)").text();
-        const name = row.find("td:eq(1)").text();
-        const price = row.find("td:eq(2)").text();
-        const qty = row.find("td:eq(3)").text();
-
-        $("#item-id").val(id);
-        $("#item-name").val(name);
-        $("#item-price").val(price);
-        $("#item-qty").val(qty);
-
-        isEditingItem = true;
-        editingItemId = id;
-    });
-
-    // Delete button handler
-    $(document).on("click", ".btn-delete-item", function () {
-        const id = $(this).closest("tr").find("td:eq(0)").text();
-        const index = ItemDB.findIndex(item => item.getItemId() === id);
-        if (index !== -1) {
-            ItemDB.splice(index, 1);
-            renderItemTable();
-            generateNextItemId();
-        }
-    });
-});
-
-// Utility functions
-function clearItemFields() {
+function clearItemForm() {
+    $("#item-id").val("");
     $("#item-name").val("");
     $("#item-price").val("");
     $("#item-qty").val("");
+    $("#item-form button[type='submit']").text("Add");
+    editMode = false;
+    editItemId = null;
 }
 
 function renderItemTable() {
-    $("#item_tBody").empty();
+    const tbody = $("#item_tBody");
+    tbody.empty();
+
     ItemDB.forEach(item => {
-        const row = `<tr>
-            <td>${item.getItemId()}</td>
-            <td>${item.getItemName()}</td>
-            <td>${item.getItemPrice().toFixed(2)}</td>
-            <td>${item.getItemQty()}</td>
-            <td>
-                <button class='btn btn-sm btn-warning btn-edit-item me-1'>Update</button>
-                <button class='btn btn-sm btn-danger btn-delete-item'>Delete</button>
-            </td>
-        </tr>`;
-        $("#item_tBody").append(row);
+        const row = `
+            <tr>
+                <td>${item.getItemId()}</td>
+                <td>${item.getItemName()}</td>
+                <td>${item.getItemPrice().toFixed(2)}</td>
+                <td>${item.getItemQty()}</td>
+                <td>
+                    <button class="btn btn-sm btn-warning edit-item-btn" data-id="${item.getItemId()}">Edit</button>
+                    <button class="btn btn-sm btn-danger delete-item-btn" data-id="${item.getItemId()}">Delete</button>
+                </td>
+            </tr>`;
+        tbody.append(row);
     });
 }
 
-function generateNextItemId() {
-    if (ItemDB.length === 0) {
-        $("#item-id").val("I001");
+function addItem(e) {
+    e.preventDefault();
+
+    const name = $("#item-name").val().trim();
+    const price = parseFloat($("#item-price").val());
+    const qty = parseInt($("#item-qty").val());
+
+    if (!name || isNaN(price) || price <= 0 || isNaN(qty) || qty < 0) {
+        alert("Please enter valid item details.");
+        return;
+    }
+
+    if (editMode) {
+        const item = ItemDB.find(i => i.getItemId() === editItemId);
+        if (item) {
+            item.setItemName(name);
+            item.setItemPrice(price);
+            item.setItemQty(qty);
+        }
+        clearItemForm();
+        renderItemTable();
     } else {
-        const lastId = ItemDB[ItemDB.length - 1].getItemId();
-        const next = parseInt(lastId.substring(1)) + 1;
-        $("#item-id").val("I" + String(next).padStart(3, '0'));
+        const id = generateItemId();
+        const item = new Item(id, name, price, qty);
+        ItemDB.push(item);
+        clearItemForm();
+        renderItemTable();
     }
 }
+
+function deleteItem(id) {
+    const index = ItemDB.findIndex(i => i.getItemId() === id);
+    if (index !== -1) {
+        ItemDB.splice(index, 1);
+        if(editMode && editItemId === id) clearItemForm();
+        renderItemTable();
+    }
+}
+
+function editItem(id) {
+    const item = ItemDB.find(i => i.getItemId() === id);
+    if (item) {
+        $("#item-id").val(item.getItemId());
+        $("#item-name").val(item.getItemName());
+        $("#item-price").val(item.getItemPrice());
+        $("#item-qty").val(item.getItemQty());
+        $("#item-form button[type='submit']").text("Update");
+        editMode = true;
+        editItemId = id;
+    }
+}
+
+$("#item-form").on("submit", addItem);
+
+$("#item_tBody").on("click", ".delete-item-btn", function () {
+    const id = $(this).data("id");
+    deleteItem(id);
+});
+
+$("#item_tBody").on("click", ".edit-item-btn", function () {
+    const id = $(this).data("id");
+    editItem(id);
+});
+
+$(document).ready(() => {
+    renderItemTable();
+});
+
+export {
+    renderItemTable,
+    addItem,
+    editItem,
+    deleteItem
+};
